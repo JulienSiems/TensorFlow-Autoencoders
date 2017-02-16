@@ -14,24 +14,21 @@ class MLP:
     def __init__(self, X, y):
         self.data = X
         self.target = y
-        self.n_input = int(X.get_shape()[1])
-        self.n_hidden = 100
-        self.n_output = int(y.get_shape()[1])
-        self.transfer = tf.nn.softplus
-        self.weights = self.initialize_weights()
         self._prediction = None
         self._optimize = None
         self._error = None
 
-    @property
     def prediction(self):
         if self._prediction is None:
-            self.hidden = self.transfer(tf.add(tf.matmul(self.data, self.weights['w1']), self.weights['b1']),
-                                        name='hiddenlayer1')
-            self._prediction = tf.add(tf.matmul(self.hidden, self.weights['w2']), self.weights['b2'], name='output_layer')
+            data_size = int(self.data.get_shape()[1])
+            target_size = int(self.target.get_shape()[1])
+            weight = tf.Variable(tf.truncated_normal([data_size, target_size]), name = 'weight')
+            #bias = tf.Variable(tf.truncated_normal([1, target_size]), name = 'bias')
+            incoming = tf.matmul(self.data, weight) #+ bias
+            self._prediction = tf.nn.softmax(incoming)
         return self._prediction
 
-    def initialize_weights(self):
+    '''def initialize_weights(self):
         all_weights = dict()
         all_weights['w1'] = tf.Variable(xavier_init(self.n_input, self.n_hidden), name='weights1')
         all_weights['b1'] = tf.Variable(
@@ -40,17 +37,16 @@ class MLP:
             tf.zeros([self.n_hidden, self.n_output]), dtype=tf.float32, name='weights2')
         all_weights['b2'] = tf.Variable(
             tf.zeros([self.n_output]), dtype=tf.float32, name='bias2')
-        return all_weights
+        return all_weights'''
 
-    @property
     def optimize(self):
         if self._optimize is None:
             logprob = tf.log(self.prediction + 1e-12)
             cross_entropy = -tf.reduce_sum(self.target * logprob)
-            self._optimize = tf.train.AdamOptimizer(0.01).minimize(cross_entropy)
+            optimizer = tf.train.RMSPropOptimizer(0.03)
+            self._optimize = optimizer.minimize(cross_entropy)
         return self._optimize
 
-    @property
     def error(self):
         if self._error is None:
             mistakes = tf.not_equal(tf.argmax(self.target, 1), tf.argmax(self.prediction, 1))
@@ -67,8 +63,9 @@ def main():
 
     for _ in range(10):
         images, labels = mnist.test.images, mnist.test.labels
-        #error = sess.run(model.error, {image: images, label: labels})
-        #print('Test error {:6.2f}%'.format(100 * error))
+        error = sess.run(model.error, {image: images, label: labels})
+        print('Test error {:6.2f}%'.format(100 * error))
+        sess.run(tf.global_variables_initializer())
         for _ in range(60):
             images, labels = mnist.train.next_batch(100)
             sess.run(model.optimize, {image: images, label: labels})

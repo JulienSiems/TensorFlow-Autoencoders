@@ -51,13 +51,18 @@ class Model:
         self.optimize
         self.error
 
-    @define_scope(initializer=tf.contrib.slim.xavier_initializer())
+    @define_scope
     def prediction(self):
-        x = self.image
-        x = tf.contrib.slim.fully_connected(x, 200)
+        # x = self.image
+        data_size = int(self.image.get_shape()[1])
+        target_size = int(self.label.get_shape()[1])
+        weight = tf.Variable(tf.truncated_normal([data_size, target_size]))
+        incoming = tf.matmul(self.image, weight)
+        return tf.nn.softmax(incoming)
+        '''x = tf.contrib.slim.fully_connected(x, 200)
         x = tf.contrib.slim.fully_connected(x, 200)
         x = tf.contrib.slim.fully_connected(x, 10, tf.nn.softmax)
-        return x
+        return x '''
 
     @define_scope
     def optimize(self):
