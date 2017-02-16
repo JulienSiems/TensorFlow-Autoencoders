@@ -1,5 +1,7 @@
 import tensorflow as tf
+from tensorflow.examples.tutorials.mnist import input_data
 import numpy as np
+
 
 def xavier_init(fan_in, fan_out, constant = 1):
     low = -constant * np.sqrt(6.0 / (fan_in + fan_out))
@@ -8,40 +10,28 @@ def xavier_init(fan_in, fan_out, constant = 1):
                              minval = low, maxval = high,
                              dtype = tf.float32)
 
-class MLP(object):
-    def __init__(self):
-        self.n_input = 784
+class MLP:
+    def __init__(self, X, y):
+        self.data = X
+        self.target = y
+        self.n_input = int(X.get_shape()[1])
         self.n_hidden = 100
-        self.n_output = 10
+        self.n_output = int(y.get_shape()[1])
         self.transfer = tf.nn.softplus
+        self.weights = self.initialize_weights()
+        self._prediction = None
+        self._optimize = None
+        self._error = None
 
-        network_weights = self._initialize_weights()
-        self.weights = network_weights
+    @property
+    def prediction(self):
+        if self._prediction is None:
+            self.hidden = self.transfer(tf.add(tf.matmul(self.data, self.weights['w1']), self.weights['b1']),
+                                        name='hiddenlayer1')
+            self._prediction = tf.add(tf.matmul(self.hidden, self.weights['w2']), self.weights['b2'], name='output_layer')
+        return self._prediction
 
-        # model
-        self.x = tf.placeholder(tf.float32, [None, self.n_input], name='InputData')
-        self.y_ = tf.placeholder(tf.float32, [None, self.n_output], name='LabelData')
-        self.hidden = self.transfer(tf.add(tf.matmul(self.x, self.weights['w1']), self.weights['b1']), name='hiddenlayer1')
-        self.y = tf.add(tf.matmul(self.hidden, self.weights['w2']), self.weights['b2'], name='output_layer')
-
-        # cost
-        self.cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=self.y_, logits = self.y))
-        self.optimizer = tf.train.AdamOptimizer(1e-4).minimize(self.cross_entropy)
-
-        correct_prediction = tf.equal(tf.argmax(self.y, 1), tf.argmax(self.y_, 1))
-
-        # accuracy
-        self.accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-        tf.summary.scalar("loss", self.cross_entropy)
-        tf.summary.scalar("accuracy", self.accuracy)
-
-        merged_summary_op = tf.summary.merge_all()
-        init = tf.global_variables_initializer()
-        self.sess = tf.Session()
-        self.sess.run(init)
-        summary_writer = tf.summary.FileWriter('/tmp/tensorflow_logs/example', graph=self.sess.graph)
-
-    def _initialize_weights(self):
+    def initialize_weights(self):
         all_weights = dict()
         all_weights['w1'] = tf.Variable(xavier_init(self.n_input, self.n_hidden), name='weights1')
         all_weights['b1'] = tf.Variable(
@@ -52,13 +42,37 @@ class MLP(object):
             tf.zeros([self.n_output]), dtype=tf.float32, name='bias2')
         return all_weights
 
-    def partial_fit(self, X, y):
-        crossentr, opt = self.sess.run((self.cross_entropy, self.optimizer), feed_dict={self.x: X, self.y_: y})
-        return crossentr
+    @property
+    def optimize(self):
+        if self._optimize is None:
+            logprob = tf.log(self.prediction + 1e-12)
+            cross_entropy = -tf.reduce_sum(self.target * logprob)
+            self._optimize = tf.train.AdamOptimizer(0.01).minimize(cross_entropy)
+        return self._optimize
 
-    def accuracy_f(self, X, y):
-        acc = self.sess.run(self.accuracy, feed_dict={self.x: X, self.y_: y})
-        return acc
+    @property
+    def error(self):
+        if self._error is None:
+            mistakes = tf.not_equal(tf.argmax(self.target, 1), tf.argmax(self.prediction, 1))
+            self._error = tf.reduce_mean(tf.cast(mistakes, tf.float32))
+        return self._error
+
+def main():
+    mnist = input_data.read_data_sets('./mnist/', one_hot=True)
+    image = tf.placeholder(tf.float32, [None, 784])
+    label = tf.placeholder(tf.float32, [None, 10])
+    model = MLP(image, label)
+    sess = tf.Session()
+    sess.run(tf.global_variables_initializer())
+
+    for _ in range(10):
+        images, labels = mnist.test.images, mnist.test.labels
+        #error = sess.run(model.error, {image: images, label: labels})
+        #print('Test error {:6.2f}%'.format(100 * error))
+        for _ in range(60):
+            images, labels = mnist.train.next_batch(100)
+            sess.run(model.optimize, {image: images, label: labels})
 
 
-
+if __name__ == '__main__':
+    main()
