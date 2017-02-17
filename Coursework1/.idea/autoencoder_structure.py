@@ -2,6 +2,7 @@
 # https://danijar.github.io/structuring-your-tensorflow-models
 import functools
 import tensorflow as tf
+from tensorflow.contrib.layers.python.layers.initializers import xavier_initializer
 from tensorflow.examples.tutorials.mnist import input_data
 
 
@@ -51,27 +52,18 @@ class Model:
         self.optimize
         self.error
 
-    @define_scope
+    @define_scope(initializer=xavier_initializer())
     def prediction(self):
-        # x = self.image
-        data_size = int(self.image.get_shape()[1])
-        target_size = int(self.label.get_shape()[1])
-        weight = tf.Variable(tf.truncated_normal([data_size, target_size]))
-        bias = tf.Variable(tf.truncated_normal([1, target_size]), name='bias')
-        incoming = tf.matmul(self.image, weight) + bias
-        return tf.nn.softmax(incoming)
-
-        '''x = tf.contrib.slim.fully_connected(x, 200)
+        x = self.image
         x = tf.contrib.slim.fully_connected(x, 200)
-        x = tf.contrib.slim.fully_connected(x, 10, tf.nn.softmax)
-        return x '''
+        self.reconstruction = tf.contrib.slim.fully_connected(x, 784)
+        return self.reconstruction
 
     @define_scope
     def optimize(self):
-        logprob = tf.log(self.prediction + 1e-12)
-        cross_entropy = -tf.reduce_sum(self.label * logprob)
+        cost = 0.5*tf.reduce_sum(tf.pow(tf.sub(self.prediction, self.image), 2.0))
         optimizer = tf.train.RMSPropOptimizer(0.03)
-        return optimizer.minimize(cross_entropy)
+        return optimizer.minimize(cost)
 
     @define_scope
     def error(self):
@@ -80,22 +72,22 @@ class Model:
         return tf.reduce_mean(tf.cast(mistakes, tf.float32))
 
 def main():
-    mnist = input_data.read_data_sets('./mnist/', one_hot=True)
-    image = tf.placeholder(tf.float32, [None, 784])
-    label = tf.placeholder(tf.float32, [None, 10])
+    mnist = input_data.read_data_sets('./mnist/', one_hot=True, fake_data=True)
+    image = tf.placeholder(tf.float32, [None, 784], name='images')
+    label = tf.placeholder(tf.float32, [None, 10], name='labels')
     model = Model(image, label)
     sess = tf.Session()
-    sess.run(tf.global_variables_initializer())
+    sess.run(tf.initialize_all_variables())
 
     for _ in range(20):
       images, labels = mnist.test.images, mnist.test.labels
-      error = sess.run(model.error, {image: images, label: labels})
-      print('Test error {:6.2f}%'.format(100 * error))
+      #error = sess.run(model.error, {image: images, label: labels})
+      #print('Test error {:6.2f}%'.format(100 * error))
       for _ in range(60):
         images, labels = mnist.train.next_batch(100)
         sess.run(model.optimize, {image: images, label: labels})
-      #pred = sess.run(model.prediction, {image: images, label: labels})
-      #print('Prediction {}, {}'.format(pred[0], labels[0]))
+      pred = sess.run(model.prediction, {image: images, label: labels})
+      print('Prediction {}, {}'.format(pred[0], labels[0]))
 
 
 if __name__ == '__main__':

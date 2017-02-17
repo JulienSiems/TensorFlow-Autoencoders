@@ -3,7 +3,7 @@
 import functools
 import tensorflow as tf
 from tensorflow.examples.tutorials.mnist import input_data
-
+import numpy as np
 
 def doublewrap(function):
     """
@@ -50,33 +50,34 @@ class Model:
         self.prediction
         self.optimize
         self.error
+        self.encoded
+        self.decoded
 
-    @define_scope
+    def encoder(self):
+        x = self.image
+        self.encoded = tf.contrib.slim.fully_connected(x, 200)
+
+    def decoder(self):
+        x = tf.contrib.slim.fully_connected(self.encoded, 200)
+        self.decoded = tf.contrib.slim.fully_connected(x, 784)
+
+    @define_scope(initializer=tf.contrib.slim.xavier_initializer())
     def prediction(self):
-        # x = self.image
-        data_size = int(self.image.get_shape()[1])
-        target_size = int(self.label.get_shape()[1])
-        weight = tf.Variable(tf.truncated_normal([data_size, target_size]))
-        bias = tf.Variable(tf.truncated_normal([1, target_size]), name='bias')
-        incoming = tf.matmul(self.image, weight) + bias
-        return tf.nn.softmax(incoming)
+        return self.decoded
 
-        '''x = tf.contrib.slim.fully_connected(x, 200)
-        x = tf.contrib.slim.fully_connected(x, 200)
-        x = tf.contrib.slim.fully_connected(x, 10, tf.nn.softmax)
-        return x '''
+    def sample(self):
+        self.encoded = np.random.binomial(1, 1, 784)
+        return self.decoder()
 
     @define_scope
     def optimize(self):
-        logprob = tf.log(self.prediction + 1e-12)
-        cross_entropy = -tf.reduce_sum(self.label * logprob)
-        optimizer = tf.train.RMSPropOptimizer(0.03)
-        return optimizer.minimize(cross_entropy)
+        cost = tf.reduce_mean(tf.pow(self.prediction - self.image, 2))
+        optimizer = tf.train.RMSPropOptimizer(0.3)
+        return optimizer.minimize(cost)
 
     @define_scope
     def error(self):
-        mistakes = tf.not_equal(
-            tf.argmax(self.label, 1), tf.argmax(self.prediction, 1))
+        mistakes = tf.reduce_mean(tf.pow(self.prediction - self.image, 2))
         return tf.reduce_mean(tf.cast(mistakes, tf.float32))
 
 def main():
@@ -88,15 +89,16 @@ def main():
     sess.run(tf.global_variables_initializer())
 
     for _ in range(20):
-      images, labels = mnist.test.images, mnist.test.labels
-      error = sess.run(model.error, {image: images, label: labels})
-      print('Test error {:6.2f}%'.format(100 * error))
-      for _ in range(60):
-        images, labels = mnist.train.next_batch(100)
-        sess.run(model.optimize, {image: images, label: labels})
-      #pred = sess.run(model.prediction, {image: images, label: labels})
-      #print('Prediction {}, {}'.format(pred[0], labels[0]))
-
+        images, labels = mnist.test.images, mnist.test.labels
+        error = sess.run(model.error, {image: images})
+        print('Test error {:6.2f}%'.format(100 * error))
+        for _ in range(60):
+            images, labels = mnist.train.next_batch(100)
+            sess.run(model.optimize, {image: images})
+              #pred = sess.run(model.prediction, {image: images, label: labels})
+              #print('Prediction {}, {}'.format(pred[0], labels[0]))
+    #i = sess.run(model.sample)
+    #k = 0
 
 if __name__ == '__main__':
   main()
