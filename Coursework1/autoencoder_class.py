@@ -86,7 +86,7 @@ class Autoencoder:
                     b = tf.Variable(tf.zeros(shape=(1, n_output)), name = 'bias'+str(layer_i))
                     encoder.append(W)
                     current_input = tf.nn.elu(tf.add(tf.matmul(current_input, W), b),
-                                              name='decclayer' + str(layer_i))
+                                              name='declayer' + str(layer_i))
 
         return current_input
 

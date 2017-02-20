@@ -49,79 +49,114 @@ def define_scope(function, scope=None, *args, **kwargs):
         return getattr(self, attribute)
     return decorator
 
-class GAN:
-    def __init__(self, image, noise, discr_dimensions = [784, 64], gener_dimensions = [64, 784]):
-        self.image = image
-        self.noise = noise
-        self.discr_dimensions = discr_dimensions
-        self.gener_dimensions = gener_dimensions
-        self.optimize_generator
-        self.error_generator
-        self.optimize_discriminator
-        self.error_discriminator
 
-    def discriminator(self, input):
-        current_input = self.noise
+class Discriminator:
+    def __init__(self, image, g_sample, discr_dimensions = [784, 64]):
+        self.image = image
+        self.g_sample = g_sample
+        self.discr_dimensions = discr_dimensions
+        self.g_mode = False
+        self.predict
+        self.optimize
+        self.loss
+
+    @define_scope
+    def predict(self):
+        if self.g_mode is True:
+            current_input = self.image
+        else:
+            current_input = self.g_sample
+
         # DISCRIMINATOR
         with tf.name_scope('Discriminator'):
-            for layer_i, n_output in enumerate(self.discr_dimensions):
-                with tf.name_scope('generator_layer' + str(layer_i)):
+            for layer_i, n_output in enumerate(self.discr_dimensions[1:-1]):
+                with tf.name_scope('generator_elu_layer' + str(layer_i)):
                     n_input = int(current_input.get_shape()[1])
                     W = tf.Variable(xavier_init(n_input, n_output), name = 'weight'+str(layer_i))
                     b = tf.Variable(tf.zeros(shape=(1, n_output)), name = 'bias'+str(layer_i))
-                    current_input = tf.nn.elu(tf.add(tf.matmul(current_input, W), b),
-                                              name='discriminator' + str(layer_i))
-        return current_input
+                    current_input = tf.nn.elu(tf.add(tf.matmul(current_input, W), b,
+                                                     name='discriminator' + str(layer_i)))
 
-    def generator(self, input):
-        current_input = input
+            with tf.name_scope('generator_sig_flat_layer'):
+                n_input = int(current_input.get_shape()[1])
+                n_output = int(self.discr_dimensions[-1])
+                W = tf.Variable(xavier_init(n_input, n_output), name='weight')
+                b = tf.Variable(tf.zeros(shape=(1, n_output)), name='bias')
+                D = tf.add(tf.matmul(current_input, W), b)
+                D_logit = tf.nn.sigmoid(D)
+        return D_logit
+
+    @define_scope
+    def optimize(self):
+        optimizer = tf.train.AdamOptimizer(0.001)
+        return optimizer.minimize(self.loss)
+
+    @define_scope
+    def loss(self):
+        D_logit_real = self.predict
+        self.g_mode = True
+        D_logit_fake = self.predict
+        self.g_mode = False
+
+        D_loss_real = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(D_logit_real, tf.ones_like(D_logit_real)))
+        D_loss_fake = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(D_logit_fake, tf.zeros_like(D_logit_fake)))
+        D_loss = D_loss_real + D_loss_fake
+        return D_loss
+
+
+class Generator:
+    def __init__(self, noise, gener_dimensions = [64, 200, 784]):
+        self.noise = noise
+        #self.D_logit_fake = D_logit_fake
+        self.gener_dimensions = gener_dimensions
+        self.predict
+        #self.optimize
+        #self.loss
+
+    @define_scope
+    def predict(self):
+        current_input = self.noise
         # GENERATOR
-        with tf.name_scope('Generator'):
-            for layer_i, n_output in enumerate(self.gener_dimensions):
-                with tf.name_scope('generator_layer' + str(layer_i)):
+        with tf.name_scope('Discriminator'):
+            for layer_i, n_output in enumerate(self.gener_dimensions[1:-1]):
+                with tf.name_scope('generator_elu_layer' + str(layer_i)):
                     n_input = int(current_input.get_shape()[1])
                     W = tf.Variable(xavier_init(n_input, n_output), name = 'weight'+str(layer_i))
                     b = tf.Variable(tf.zeros(shape=(1, n_output)), name = 'bias'+str(layer_i))
-                    current_input = tf.nn.elu(tf.add(tf.matmul(current_input, W), b),
-                                              name='generator' + str(layer_i))
+                    current_input = tf.nn.elu(tf.add(tf.matmul(current_input, W), b,
+                                                     name='discriminator' + str(layer_i)))
+            with tf.name_scope('generator_sig_layer'):
+                n_input = int(current_input.get_shape()[1])
+                n_output = int(self.gener_dimensions[-1])
+                W = tf.Variable(xavier_init(n_input, n_output), name='weight')
+                b = tf.Variable(tf.zeros(shape=(1, n_output)), name='bias')
+                current_input = tf.nn.sigmoid(tf.add(tf.matmul(current_input, W), b))
         return current_input
 
+    '''@define_scope
+    def optimize(self):
+        optimizer = tf.train.AdamOptimizer(0.001)
+        return optimizer.minimize(self.loss)
 
     @define_scope
-    def optimize_generator(self):
-        optimizer = tf.train.AdamOptimizer(learning_rate=0.001)
-        return optimizer.minimize(self.error_generator)
-
-    @define_scope
-    def error_generator(self):
-        with tf.name_scope('Loss_generator'):
-            self.loss_generator = tf.reduce_mean(tf.log(1-self.discriminator(self.generator(self.noise))))
-        tf.summary.scalar('error', self.loss_generator)
-        return self.loss_generator
-
-    @define_scope
-    def optimize_discriminator(self):
-        optimizer = tf.train.AdamOptimizer(learning_rate=0.001)
-        return optimizer.minimize(self.error_discriminator)
-
-    @define_scope
-    def error_discriminator(self):
-        with tf.name_scope('loss_discriminator'):
-            self.loss_discriminator = tf.reduce_mean(tf.log(self.discriminator(self.image))
-                                                 + tf.log(1-self.discriminator(self.generator(self.noise))))
-        tf.summary.scalar('error', self.loss_discriminator)
-        return self.loss_discriminator
+    def loss(self):
+        G_loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(self.D_logit_fake,
+                                                                        tf.ones_like(self.D_logit_fake)))
+        return G_loss'''
 
 def main():
     mnist = input_data.read_data_sets('./mnist/', one_hot=True)
     image = tf.placeholder(dtype=tf.float32, shape=[None, 784], name = 'image')
+    g_sample = tf.placeholder(dtype=tf.float32, shape=[None, 784], name = 'g_sample')
     noise = tf.placeholder(dtype=tf.float32, shape=[None, 64], name = 'noise')
-    gan = GAN(image, noise)
+
+    discriminator = Discriminator(image, g_sample)
+    generator = Generator(noise)
 
     merged_summary = tf.summary.merge_all()
 
     sess = tf.Session()
-    logpath = '/tmp/tensorflow_logs/vae/9'
+    logpath = '/tmp/tensorflow_logs/gan/1'
     n_examples = 100
     test_writer = tf.summary.FileWriter(logpath, graph=tf.get_default_graph())
     sess.run(tf.global_variables_initializer())
@@ -130,41 +165,14 @@ def main():
         for batch_i in range(1):
             noise_samples = np.random.normal(size=(n_examples, 64))
             batch_xs, _ = mnist.train.next_batch(n_examples)
-            _, summary = sess.run(fetches=[gan.optimize_discriminator, merged_summary],
-                                  feed_dict={image: batch_xs, noise: noise_samples})
-            test_writer.add_summary(summary, epoch_i)
-        _, summary = sess.run(fetches=[gan.optimize_generator, merged_summary],
-                              feed_dict={noise: noise_samples})
-
-    # Plot example reconstructions
-    '''n_examples = 15
-    test_xs, _ = mnist.test.next_batch(n_examples)
-    test_xs_norm = np.array([img - mean_img for img in test_xs])
-    recon = sess.run(model.prediction, feed_dict={image: test_xs})
-    fig, axs = plt.subplots(2, n_examples, figsize=(10, 2))
-    for example_i in range(n_examples):
-        axs[0][example_i].imshow(
-            np.reshape(test_xs[example_i, :], (28, 28)))
-        axs[1][example_i].imshow(
-            np.reshape([recon[example_i, :]], (28, 28)))
-    fig.show()
-    plt.draw()
-    plt.waitforbuttonpress()
-
-    n_examples = 15
-    test_xs = np.random.normal(size=(n_examples, 64))
-    recon = sess.run(model.prediction, feed_dict={model.latent: test_xs})
-    fig, axs = plt.subplots(2, n_examples, figsize=(10, 2))
-    for example_i in range(n_examples):
-        axs[0][example_i].imshow(
-            np.reshape(test_xs[example_i, :], (8, 8)))
-        axs[1][example_i].imshow(
-            np.reshape([recon[example_i, :]], (28, 28)))
-    fig.show()
-    plt.draw()
-    plt.savefig('15_examples.png')
-    plt.waitforbuttonpress()'''
-
+            g_sample = sess.run(fetches=generator.predict,
+                                  feed_dict={noise: noise_samples})
+            #test_writer.add_summary(summary, epoch_i)
+        #_, summary = sess.run(fetches=[gan.optimize_generator, merged_summary],
+                              #feed_dict={g_sample: noise_samples})
 
 if __name__ == '__main__':
   main()
+
+
+  #what is the problem?
