@@ -51,9 +51,10 @@ def define_scope(function, scope=None, *args, **kwargs):
 
 
 class Discriminator:
-    def __init__(self, image, g_sample, discr_dimensions = [784, 64]):
+    def __init__(self, image, generator, discr_dimensions = [784, 64]):
+        self.g_sample = generator.predict
         self.image = image
-        self.g_sample = g_sample
+        self.generator = generator
         self.discr_dimensions = discr_dimensions
         self.g_mode = False
         self.predict
@@ -89,25 +90,38 @@ class Discriminator:
     @define_scope
     def optimize(self):
         optimizer = tf.train.AdamOptimizer(0.001)
-        return optimizer.minimize(self.loss)
+        D_loss, D_logit_fake = self.loss
+        return optimizer.minimize(D_loss), D_logit_fake
 
     @define_scope
     def loss(self):
+        self.g_sample = self.generator.predict
         D_logit_real = self.predict
         self.g_mode = True
         D_logit_fake = self.predict
         self.g_mode = False
 
         D_loss_real = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(D_logit_real, tf.ones_like(D_logit_real)))
-        D_loss_fake = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(D_logit_fake, tf.zeros_like(D_logit_fake)))
-        D_loss = D_loss_real + D_loss_fake
-        return D_loss
+        self.D_loss_fake = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(D_logit_fake, tf.zeros_like(D_logit_fake)))
+        D_loss = D_loss_real + self.D_loss_fake
+        return D_loss, D_logit_fake
+
+
+class Discriminator_fake:
+    def __init__(self):
+        self.loss
+
+    @define_scope
+    def loss(self):
+        return tf.Variable(tf.constant(1, shape=[None,1]), dtype=tf.float32),  tf.Variable(tf.constant(1, shape=[None, None]), dtype=tf.float32)
+
 
 
 class Generator:
-    def __init__(self, noise, gener_dimensions = [64, 200, 784]):
+    def __init__(self, noise, discriminator = None, gener_dimensions = [64, 200, 784]):
         self.noise = noise
-        #self.D_logit_fake = D_logit_fake
+        self.discriminator = discriminator
+        self.D_logit_fake = discriminator.loss[1]
         self.gener_dimensions = gener_dimensions
         self.predict
         #self.optimize
@@ -117,7 +131,7 @@ class Generator:
     def predict(self):
         current_input = self.noise
         # GENERATOR
-        with tf.name_scope('Discriminator'):
+        with tf.name_scope('Generator'):
             for layer_i, n_output in enumerate(self.gener_dimensions[1:-1]):
                 with tf.name_scope('generator_elu_layer' + str(layer_i)):
                     n_input = int(current_input.get_shape()[1])
@@ -133,7 +147,7 @@ class Generator:
                 current_input = tf.nn.sigmoid(tf.add(tf.matmul(current_input, W), b))
         return current_input
 
-    '''@define_scope
+    @define_scope
     def optimize(self):
         optimizer = tf.train.AdamOptimizer(0.001)
         return optimizer.minimize(self.loss)
@@ -142,16 +156,22 @@ class Generator:
     def loss(self):
         G_loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(self.D_logit_fake,
                                                                         tf.ones_like(self.D_logit_fake)))
-        return G_loss'''
+        return G_loss
+
+
 
 def main():
     mnist = input_data.read_data_sets('./mnist/', one_hot=True)
+
     image = tf.placeholder(dtype=tf.float32, shape=[None, 784], name = 'image')
     g_sample = tf.placeholder(dtype=tf.float32, shape=[None, 784], name = 'g_sample')
     noise = tf.placeholder(dtype=tf.float32, shape=[None, 64], name = 'noise')
+    d_logit_fake = tf.placeholder(dtype=tf.float32, shape=[None, 64], name = 'd_logit_fake')
 
-    discriminator = Discriminator(image, g_sample)
-    generator = Generator(noise)
+    discriminator_fake = Discriminator_fake()
+    generator = Generator(noise, discriminator_fake)
+    discriminator = Discriminator(image, generator)
+    generator.discriminator = discriminator
 
     merged_summary = tf.summary.merge_all()
 
@@ -165,8 +185,11 @@ def main():
         for batch_i in range(1):
             noise_samples = np.random.normal(size=(n_examples, 64))
             batch_xs, _ = mnist.train.next_batch(n_examples)
-            g_sample = sess.run(fetches=generator.predict,
-                                  feed_dict={noise: noise_samples})
+            #g_sampled = sess.run(fetches=generator.predict,
+                          #        feed_dict={noise: noise_samples})
+            sess.run(fetches=discriminator.optimize, feed_dict={image:batch_xs, noise:noise_samples})
+            sess.run(fetches=generator.optimize, feed_dict={})
+            #sess.run(fetches=generator.optimize, feed_dict={d_logit_fake:D_logit_fake})
             #test_writer.add_summary(summary, epoch_i)
         #_, summary = sess.run(fetches=[gan.optimize_generator, merged_summary],
                               #feed_dict={g_sample: noise_samples})
