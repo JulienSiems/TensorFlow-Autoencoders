@@ -142,7 +142,7 @@ def main():
 
     merged_summary = tf.summary.merge_all()
     sess = tf.Session()
-    logpath = '/tmp/tensorflow_logs/vae/5'
+    logpath = '/tmp/tensorflow_logs/vae/6'
     test_writer = tf.summary.FileWriter(logpath, graph=tf.get_default_graph())
     #train_writer = tf.summary.FileWriter('/train')
     sess.run(tf.global_variables_initializer())

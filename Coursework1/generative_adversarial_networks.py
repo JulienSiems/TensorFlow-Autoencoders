@@ -63,28 +63,29 @@ class Discriminator:
 
     @define_scope
     def predict(self):
-        if self.g_mode is True:
-            current_input = self.image
-        else:
-            current_input = self.g_sample
+        if self.predict is None:
+            if self.g_mode is True:
+                current_input = self.image
+            else:
+                current_input = self.g_sample
 
-        # DISCRIMINATOR
-        with tf.name_scope('Discriminator'):
-            for layer_i, n_output in enumerate(self.discr_dimensions[1:-1]):
-                with tf.name_scope('generator_elu_layer' + str(layer_i)):
+            # DISCRIMINATOR
+            with tf.name_scope('Discriminator'):
+                for layer_i, n_output in enumerate(self.discr_dimensions[1:-1]):
+                    with tf.name_scope('generator_elu_layer' + str(layer_i)):
+                        n_input = int(current_input.get_shape()[1])
+                        W = tf.Variable(xavier_init(n_input, n_output), name = 'weight'+str(layer_i))
+                        b = tf.Variable(tf.zeros(shape=(1, n_output)), name = 'bias'+str(layer_i))
+                        current_input = tf.nn.elu(tf.add(tf.matmul(current_input, W), b,
+                                                         name='discriminator' + str(layer_i)))
+
+                with tf.name_scope('discriminator_sig_flat_layer'):
                     n_input = int(current_input.get_shape()[1])
-                    W = tf.Variable(xavier_init(n_input, n_output), name = 'weight'+str(layer_i))
-                    b = tf.Variable(tf.zeros(shape=(1, n_output)), name = 'bias'+str(layer_i))
-                    current_input = tf.nn.elu(tf.add(tf.matmul(current_input, W), b,
-                                                     name='discriminator' + str(layer_i)))
-
-            with tf.name_scope('generator_sig_flat_layer'):
-                n_input = int(current_input.get_shape()[1])
-                n_output = int(self.discr_dimensions[-1])
-                W = tf.Variable(xavier_init(n_input, n_output), name='weight')
-                b = tf.Variable(tf.zeros(shape=(1, n_output)), name='bias')
-                D = tf.add(tf.matmul(current_input, W), b)
-                D_logit = tf.nn.sigmoid(D)
+                    n_output = int(self.discr_dimensions[-1])
+                    W = tf.Variable(xavier_init(n_input, n_output), name='weight')
+                    b = tf.Variable(tf.zeros(shape=(1, n_output)), name='bias')
+                    D = tf.add(tf.matmul(current_input, W), b)
+                    D_logit = tf.nn.sigmoid(D)
         return D_logit
 
     @define_scope
@@ -105,17 +106,6 @@ class Discriminator:
         self.D_loss_fake = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(D_logit_fake, tf.zeros_like(D_logit_fake)))
         D_loss = D_loss_real + self.D_loss_fake
         return D_loss, D_logit_fake
-
-
-class Discriminator_fake:
-    def __init__(self):
-        self.loss
-
-    @define_scope
-    def loss(self):
-        return tf.Variable(tf.constant(1, shape=[None,1]), dtype=tf.float32),  tf.Variable(tf.constant(1, shape=[None, None]), dtype=tf.float32)
-
-
 
 class Generator:
     def __init__(self, noise, discriminator = None, gener_dimensions = [64, 200, 784]):

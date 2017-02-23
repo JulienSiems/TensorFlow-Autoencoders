@@ -52,7 +52,6 @@ def define_scope(function, scope=None, *args, **kwargs):
 
 
 class Autoencoder:
-
     def __init__(self, image, enc_dimensions = [784, 500, 200, 64], dec_dimensions = [64, 200, 500, 784]):
         self.image = image
         self.enc_dimensions = enc_dimensions
@@ -62,9 +61,9 @@ class Autoencoder:
         self.error
 
     @define_scope
-    def prediction(self):
+    def prediction(self, input = 4):
         current_input = self.image
-
+        print('made it')
         # ENCODER
         encoder = []
         with tf.name_scope('Encoder'):
@@ -105,7 +104,7 @@ def main():
     mnist = input_data.read_data_sets('./mnist/', one_hot=True)
     mean_img = np.mean(mnist.train.images, axis=0)
     image = tf.placeholder(tf.float32, [None, 784])
-    model = Autoencoder(image)
+    autoencoder = Autoencoder(image)
 
     merged_summary = tf.summary.merge_all()
     sess = tf.Session()
@@ -117,20 +116,20 @@ def main():
     for epoch_i in range(1):
         test_images = mnist.test.images
         test = np.array([img - mean_img for img in test_images])
-        error, summary = sess.run(fetches=[model.error, merged_summary], feed_dict={image: test})
+        error, summary = sess.run(fetches=[autoencoder.error, merged_summary], feed_dict={image: test})
         test_writer.add_summary(summary, epoch_i)
         print('Test error {:6.2f}'.format(error))
         for batch_i in range(60):
             batch_xs, _ = mnist.train.next_batch(100)
             train = np.array([img-mean_img for img in batch_xs])
-            _, summary = sess.run(fetches=[model.optimize, merged_summary], feed_dict={image: train})
+            _, summary = sess.run(fetches=[autoencoder.optimize, merged_summary], feed_dict={image: train})
         #train_writer.add_summary(summary, epoch_i)
 
     # Plot example reconstructions
     n_examples = 15
     test_xs, _ = mnist.test.next_batch(n_examples)
     test_xs_norm = np.array([img - mean_img for img in test_xs])
-    recon = sess.run(model.prediction, feed_dict={image: test_xs_norm})
+    recon = sess.run(autoencoder.prediction, feed_dict={image: test_xs_norm})
     fig, axs = plt.subplots(2, n_examples, figsize=(10, 2))
     for example_i in range(n_examples):
         axs[0][example_i].imshow(
