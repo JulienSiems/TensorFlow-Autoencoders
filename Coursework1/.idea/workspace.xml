@@ -2,9 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d5028264-6223-4d89-a2f3-8456e61bbcbe" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/avb_class.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/avb_my_implementation.py" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/adversarial_net.py" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/../Variational Autoencoder/input_data.py" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/000.png" afterPath="$PROJECT_DIR$/out/000.png" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/001.png" afterPath="$PROJECT_DIR$/out/001.png" />
@@ -48,86 +45,7 @@
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/039.png" afterPath="$PROJECT_DIR$/out/039.png" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/040.png" afterPath="$PROJECT_DIR$/out/040.png" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/041.png" afterPath="$PROJECT_DIR$/out/041.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/042.png" afterPath="$PROJECT_DIR$/out/042.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/043.png" afterPath="$PROJECT_DIR$/out/043.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/044.png" afterPath="$PROJECT_DIR$/out/044.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/045.png" afterPath="$PROJECT_DIR$/out/045.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/046.png" afterPath="$PROJECT_DIR$/out/046.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/047.png" afterPath="$PROJECT_DIR$/out/047.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/048.png" afterPath="$PROJECT_DIR$/out/048.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/049.png" afterPath="$PROJECT_DIR$/out/049.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/050.png" afterPath="$PROJECT_DIR$/out/050.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/051.png" afterPath="$PROJECT_DIR$/out/051.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/052.png" afterPath="$PROJECT_DIR$/out/052.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/053.png" afterPath="$PROJECT_DIR$/out/053.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/054.png" afterPath="$PROJECT_DIR$/out/054.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/055.png" afterPath="$PROJECT_DIR$/out/055.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/056.png" afterPath="$PROJECT_DIR$/out/056.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/057.png" afterPath="$PROJECT_DIR$/out/057.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/058.png" afterPath="$PROJECT_DIR$/out/058.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/059.png" afterPath="$PROJECT_DIR$/out/059.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/060.png" afterPath="$PROJECT_DIR$/out/060.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/061.png" afterPath="$PROJECT_DIR$/out/061.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/062.png" afterPath="$PROJECT_DIR$/out/062.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/063.png" afterPath="$PROJECT_DIR$/out/063.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/064.png" afterPath="$PROJECT_DIR$/out/064.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/065.png" afterPath="$PROJECT_DIR$/out/065.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/066.png" afterPath="$PROJECT_DIR$/out/066.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/067.png" afterPath="$PROJECT_DIR$/out/067.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/068.png" afterPath="$PROJECT_DIR$/out/068.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/069.png" afterPath="$PROJECT_DIR$/out/069.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/070.png" afterPath="$PROJECT_DIR$/out/070.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/071.png" afterPath="$PROJECT_DIR$/out/071.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/072.png" afterPath="$PROJECT_DIR$/out/072.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/073.png" afterPath="$PROJECT_DIR$/out/073.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/074.png" afterPath="$PROJECT_DIR$/out/074.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/075.png" afterPath="$PROJECT_DIR$/out/075.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/076.png" afterPath="$PROJECT_DIR$/out/076.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/077.png" afterPath="$PROJECT_DIR$/out/077.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/078.png" afterPath="$PROJECT_DIR$/out/078.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/079.png" afterPath="$PROJECT_DIR$/out/079.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/080.png" afterPath="$PROJECT_DIR$/out/080.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/081.png" afterPath="$PROJECT_DIR$/out/081.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/082.png" afterPath="$PROJECT_DIR$/out/082.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/083.png" afterPath="$PROJECT_DIR$/out/083.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/084.png" afterPath="$PROJECT_DIR$/out/084.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/085.png" afterPath="$PROJECT_DIR$/out/085.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/086.png" afterPath="$PROJECT_DIR$/out/086.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/087.png" afterPath="$PROJECT_DIR$/out/087.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/088.png" afterPath="$PROJECT_DIR$/out/088.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/089.png" afterPath="$PROJECT_DIR$/out/089.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/090.png" afterPath="$PROJECT_DIR$/out/090.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/091.png" afterPath="$PROJECT_DIR$/out/091.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/092.png" afterPath="$PROJECT_DIR$/out/092.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/093.png" afterPath="$PROJECT_DIR$/out/093.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/094.png" afterPath="$PROJECT_DIR$/out/094.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/095.png" afterPath="$PROJECT_DIR$/out/095.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/096.png" afterPath="$PROJECT_DIR$/out/096.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/097.png" afterPath="$PROJECT_DIR$/out/097.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/098.png" afterPath="$PROJECT_DIR$/out/098.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/099.png" afterPath="$PROJECT_DIR$/out/099.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/100.png" afterPath="$PROJECT_DIR$/out/100.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/101.png" afterPath="$PROJECT_DIR$/out/101.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/102.png" afterPath="$PROJECT_DIR$/out/102.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/103.png" afterPath="$PROJECT_DIR$/out/103.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/104.png" afterPath="$PROJECT_DIR$/out/104.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/105.png" afterPath="$PROJECT_DIR$/out/105.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/106.png" afterPath="$PROJECT_DIR$/out/106.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/107.png" afterPath="$PROJECT_DIR$/out/107.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/108.png" afterPath="$PROJECT_DIR$/out/108.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/109.png" afterPath="$PROJECT_DIR$/out/109.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/110.png" afterPath="$PROJECT_DIR$/out/110.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/111.png" afterPath="$PROJECT_DIR$/out/111.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/112.png" afterPath="$PROJECT_DIR$/out/112.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/113.png" afterPath="$PROJECT_DIR$/out/113.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/114.png" afterPath="$PROJECT_DIR$/out/114.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/Coursework1.iml" afterPath="$PROJECT_DIR$/.idea/Coursework1.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/autoencoder_class.py" afterPath="$PROJECT_DIR$/autoencoder_class.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/generative_adversarial.py" afterPath="$PROJECT_DIR$/generative_adversarial.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/generative_adversarial_networks.py" afterPath="$PROJECT_DIR$/generative_adversarial_networks.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/variationalautoencoder_class.py" afterPath="$PROJECT_DIR$/variationalautoencoder_class.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/avb_my_implementation.py" afterPath="$PROJECT_DIR$/avb_my_implementation.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -154,7 +72,7 @@
     <SUITE FILE_PATH="coverage/Coursework1$autoencoder_2.coverage" NAME="autoencoder_2 Coverage Results" MODIFIED="1487355311037" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Coursework1$autoencoder_py.coverage" NAME="autoencoder_py Coverage Results" MODIFIED="1487071437071" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Coursework1$adversarial_net.coverage" NAME="adversarial_net Coverage Results" MODIFIED="1487539274357" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/Coursework1$avb_my_implementation.coverage" NAME="avb_my_implementation Coverage Results" MODIFIED="1487869756973" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Coursework1$avb_my_implementation.coverage" NAME="avb_my_implementation Coverage Results" MODIFIED="1487872164510" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Coursework1$simpler_decorator.coverage" NAME="simpler_decorator Coverage Results" MODIFIED="1487620496630" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Coursework1$gan.coverage" NAME="gan Coverage Results" MODIFIED="1487712210309" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Coursework1$avb.coverage" NAME="avb Coverage Results" MODIFIED="1487851132450" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
@@ -188,7 +106,7 @@
               <entry file="file://$PROJECT_DIR$/Adversarial+variational+bayes+toy+example.py">
                 <provider selected="true" editor-type-id="text-editor">
                   <state relative-caret-position="798">
-                    <caret line="163" column="21" lean-forward="true" selection-start-line="163" selection-start-column="21" selection-end-line="163" selection-end-column="21" />
+                    <caret line="163" column="21" lean-forward="false" selection-start-line="163" selection-start-column="21" selection-end-line="163" selection-end-column="21" />
                     <folding>
                       <element signature="e#4333#4351#0" expanded="true" />
                     </folding>
@@ -199,21 +117,11 @@
             <file leaf-file-name="avb_my_implementation.py" pinned="false" current-in-tab="true">
               <entry file="file://$PROJECT_DIR$/avb_my_implementation.py">
                 <provider selected="true" editor-type-id="text-editor">
-                  <state relative-caret-position="761">
-                    <caret line="136" column="11" lean-forward="false" selection-start-line="136" selection-start-column="8" selection-end-line="136" selection-end-column="11" />
+                  <state relative-caret-position="271">
+                    <caret line="117" column="59" lean-forward="false" selection-start-line="117" selection-start-column="59" selection-end-line="117" selection-end-column="59" />
                     <folding>
                       <element signature="e#1#19#0" expanded="true" />
                     </folding>
-                  </state>
-                </provider>
-              </entry>
-            </file>
-            <file leaf-file-name="array_ops.py" pinned="false" current-in-tab="false">
-              <entry file="file:///usr/local/lib/python3.5/dist-packages/tensorflow/python/ops/array_ops.py">
-                <provider selected="true" editor-type-id="text-editor">
-                  <state relative-caret-position="17901">
-                    <caret line="1074" column="0" lean-forward="false" selection-start-line="1074" selection-start-column="0" selection-end-line="1074" selection-end-column="0" />
-                    <folding />
                   </state>
                 </provider>
               </entry>
@@ -229,13 +137,73 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="variationalautoencoder_class.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/variationalautoencoder_class.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="204">
-              <caret line="174" column="14" lean-forward="true" selection-start-line="174" selection-start-column="14" selection-end-line="174" selection-end-column="14" />
-              <folding />
-            </state>
+      <file leaf-file-name="030.png" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/out2/030.png">
+          <provider selected="true" editor-type-id="images">
+            <state />
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="031.png" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/out2/031.png">
+          <provider selected="true" editor-type-id="images">
+            <state />
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="033.png" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/out2/033.png">
+          <provider selected="true" editor-type-id="images">
+            <state />
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="034.png" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/out2/034.png">
+          <provider selected="true" editor-type-id="images">
+            <state />
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="035.png" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/out2/035.png">
+          <provider selected="true" editor-type-id="images">
+            <state />
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="039.png" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/out2/039.png">
+          <provider selected="true" editor-type-id="images">
+            <state />
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="001.png" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/out2/001.png">
+          <provider selected="true" editor-type-id="images">
+            <state />
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="002.png" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/out2/002.png">
+          <provider selected="true" editor-type-id="images">
+            <state />
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="004.png" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/out2/004.png">
+          <provider selected="true" editor-type-id="images">
+            <state />
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="007.png" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/out2/007.png">
+          <provider selected="true" editor-type-id="images">
+            <state />
           </provider>
         </entry>
       </file>
@@ -302,8 +270,8 @@
         <option value="$PROJECT_DIR$/avb_class.py" />
         <option value="$PROJECT_DIR$/avb.py" />
         <option value="$PROJECT_DIR$/variationalautoencoder_class.py" />
-        <option value="$PROJECT_DIR$/avb_my_implementation.py" />
         <option value="$PROJECT_DIR$/Adversarial+variational+bayes+toy+example.py" />
+        <option value="$PROJECT_DIR$/avb_my_implementation.py" />
       </list>
     </option>
   </component>
@@ -314,10 +282,9 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="1" />
-    <option name="y" value="52" />
-    <option name="width" value="958" />
-    <option name="height" value="1027" />
+    <option name="y" value="24" />
+    <option name="width" value="1920" />
+    <option name="height" value="1056" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -346,6 +313,20 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="Coursework1" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Coursework1" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Coursework1" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="out2" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -722,16 +703,16 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1" y="52" width="958" height="1027" extended-state="4" />
+    <frame x="0" y="24" width="1920" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.30375782" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1515625" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.41806722" sideWeight="0.45929018" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3282365" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32878152" sideWeight="0.5407098" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.31906217" sideWeight="0.5407098" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.34791455" sideWeight="0.45104167" order="9" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
@@ -863,100 +844,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/out/062.png">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/out/116.png">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/out/024.png">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/out/034.png">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/out/027.png">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/out/028.png">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/out/029.png">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/out/033.png">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/autoencoder_class.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="204">
-          <caret line="12" column="28" lean-forward="false" selection-start-line="12" selection-start-column="28" selection-end-line="12" selection-end-column="28" />
-          <folding>
-            <element signature="e#0#23#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///usr/lib/python3/dist-packages/apport_python_hook.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="231">
-          <caret line="46" column="0" lean-forward="false" selection-start-line="46" selection-start-column="0" selection-end-line="46" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/avb_class.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1207">
-          <caret line="75" column="0" lean-forward="false" selection-start-line="75" selection-start-column="0" selection-end-line="75" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/out/111.png">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/out/106.png">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/out/079.png">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/out/057.png">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/out/053.png">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/out/055.png">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/adversarial_generative_nn.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="323">
@@ -1127,32 +1014,117 @@
         <state />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/variationalautoencoder_class.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="204">
-          <caret line="174" column="14" lean-forward="true" selection-start-line="174" selection-start-column="14" selection-end-line="174" selection-end-column="14" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Adversarial+variational+bayes+toy+example.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="798">
-          <caret line="163" column="21" lean-forward="true" selection-start-line="163" selection-start-column="21" selection-end-line="163" selection-end-column="21" />
+          <caret line="163" column="21" lean-forward="false" selection-start-line="163" selection-start-column="21" selection-end-line="163" selection-end-column="21" />
           <folding>
             <element signature="e#4333#4351#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/variationalautoencoder_class.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="123" column="20" lean-forward="false" selection-start-line="123" selection-start-column="20" selection-end-line="123" selection-end-column="20" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/out2/003.png">
+      <provider selected="true" editor-type-id="images">
+        <state />
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/avb_my_implementation.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="761">
-          <caret line="136" column="11" lean-forward="false" selection-start-line="136" selection-start-column="8" selection-end-line="136" selection-end-column="11" />
+        <state relative-caret-position="271">
+          <caret line="117" column="59" lean-forward="false" selection-start-line="117" selection-start-column="59" selection-end-line="117" selection-end-column="59" />
           <folding>
             <element signature="e#1#19#0" expanded="true" />
           </folding>
         </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/out2/005.png">
+      <provider selected="true" editor-type-id="images">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/out2/009.png">
+      <provider selected="true" editor-type-id="images">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/out2/019.png">
+      <provider selected="true" editor-type-id="images">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/out2/022.png">
+      <provider selected="true" editor-type-id="images">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/out2/024.png">
+      <provider selected="true" editor-type-id="images">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/out2/027.png">
+      <provider selected="true" editor-type-id="images">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/out2/030.png">
+      <provider selected="true" editor-type-id="images">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/out2/031.png">
+      <provider selected="true" editor-type-id="images">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/out2/033.png">
+      <provider selected="true" editor-type-id="images">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/out2/034.png">
+      <provider selected="true" editor-type-id="images">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/out2/035.png">
+      <provider selected="true" editor-type-id="images">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/out2/001.png">
+      <provider selected="true" editor-type-id="images">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/out2/002.png">
+      <provider selected="true" editor-type-id="images">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/out2/004.png">
+      <provider selected="true" editor-type-id="images">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/out2/007.png">
+      <provider selected="true" editor-type-id="images">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/out2/039.png">
+      <provider selected="true" editor-type-id="images">
+        <state />
       </provider>
     </entry>
   </component>

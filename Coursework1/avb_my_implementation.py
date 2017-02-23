@@ -120,22 +120,31 @@ mnist = input_data.read_data_sets('../../MNIST_data', one_hot=True)
 merged_summary = tf.summary.merge_all()
 sess = tf.Session()
 sess.run(tf.global_variables_initializer())
-logpath = '/tmp/tensorflow_logs/avb/6'
+logpath = '/tmp/tensorflow_logs/avb/7'
 test_writer = tf.summary.FileWriter(logpath, graph=tf.get_default_graph())
 
 i = 0
 
 for it in range(10000):
-    X_mb, _ = mnist.train.next_batch(params['batch_size'])
+    test_xs, _ = mnist.train.next_batch(params['batch_size'])
     f, _, _ , summary = sess.run([[gen_loss, disc_loss], train_gen_op, train_disc_op, merged_summary],
-                                 feed_dict={x: X_mb})
+                                 feed_dict={x: test_xs})
     test_writer.add_summary(summary, it)
-    print f
     if it % 100 == 0:
-        samples = sess.run(recon, feed_dict={x: X_mb})
+        print f
+        reconstructed = sess.run(recon, feed_dict={x: test_xs})
 
-        fig = plot(samples[1:5])
+        fig = plot(reconstructed[1:5])
         plt.savefig('out/{}.png'.format(str(i).zfill(3)), bbox_inches='tight')
         i += 1
         plt.close(fig)
 
+        n_examples = 4
+        fig, axs = plt.subplots(2, n_examples, figsize=(10, 2))
+        for example_i in range(n_examples):
+            axs[0][example_i].imshow(
+                np.reshape(test_xs[example_i, :], (28, 28)))
+            axs[1][example_i].imshow(
+                np.reshape([reconstructed[example_i, :]], (28, 28)))
+        plt.savefig('out2/{}.png'.format(str(i).zfill(3)), bbox_inches='tight')
+        plt.close(fig)
