@@ -1,4 +1,3 @@
-
 import numpy as np
 import tensorflow as tf
 slim = tf.contrib.slim
@@ -131,7 +130,7 @@ for it in range(10000):
                                  feed_dict={x: test_xs})
     test_writer.add_summary(summary, it)
     if it % 100 == 0:
-        print f
+        print(f)
         reconstructed = sess.run(recon, feed_dict={x: test_xs})
 
         fig = plot(reconstructed[1:5])

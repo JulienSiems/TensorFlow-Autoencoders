@@ -4,18 +4,15 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import os
 from tensorflow.examples.tutorials.mnist import input_data
-slim = tf.contrib.slim
-ds = tf.contrib.distributions
-st = tf.contrib.bayesflow.stochastic_tensor
 
 
 mnist = input_data.read_data_sets('../../MNIST_data', one_hot=True)
-mb_size = 8
+mb_size = 32
 z_dim = 10
-eps_dim = mnist.train.images.shape[1]
+eps_dim = 4
 X_dim = mnist.train.images.shape[1]
 y_dim = mnist.train.labels.shape[1]
-h_dim = 500
+h_dim = 128
 c = 0
 lr = 1e-3
 
@@ -43,9 +40,9 @@ def xavier_init(size):
 
 
 """ Q(z|X,eps) """
-X = tf.placeholder(tf.float32, shape=[None, X_dim], name='X')
-z = tf.placeholder(tf.float32, shape=[None, z_dim], name='z')
-eps = tf.placeholder(tf.float32, shape=[None, eps_dim], name='eps')
+X = tf.placeholder(tf.float32, shape=[None, X_dim])
+z = tf.placeholder(tf.float32, shape=[None, z_dim])
+eps = tf.placeholder(tf.float32, shape=[None, eps_dim])
 
 Q_W1 = tf.Variable(xavier_init([X_dim + eps_dim, h_dim]))
 Q_b1 = tf.Variable(tf.zeros(shape=[h_dim]))
@@ -55,11 +52,11 @@ Q_b2 = tf.Variable(tf.zeros(shape=[z_dim]))
 
 theta_Q = [Q_W1, Q_W2, Q_b1, Q_b2]
 
+
 def Q(X, eps):
     inputs = tf.concat([X, eps], 1)
-    h = tf.nn.elu(tf.matmul(inputs, Q_W1) + Q_b1)
+    h = tf.nn.relu(tf.matmul(inputs, Q_W1) + Q_b1)
     z = tf.matmul(h, Q_W2) + Q_b2
-
     return z
 
 
@@ -72,15 +69,16 @@ P_b2 = tf.Variable(tf.zeros(shape=[X_dim]))
 
 theta_P = [P_W1, P_W2, P_b1, P_b2]
 
-def P(z, eps):
-    h = tf.nn.elu(tf.matmul(z, P_W1) + P_b1)
+
+def P(z):
+    h = tf.nn.relu(tf.matmul(z, P_W1) + P_b1)
     logits = tf.matmul(h, P_W2) + P_b2
     prob = tf.nn.sigmoid(logits)
     return prob, logits
 
 
 """ D(z) """
-D_W1 = tf.Variable(xavier_init([z_dim + eps_dim, h_dim]))
+D_W1 = tf.Variable(xavier_init([z_dim, h_dim]))
 D_b1 = tf.Variable(tf.zeros(shape=[h_dim]))
 
 D_W2 = tf.Variable(xavier_init([h_dim, 1]))
@@ -88,38 +86,34 @@ D_b2 = tf.Variable(tf.zeros(shape=[1]))
 
 theta_D = [D_W1, D_W2, D_b1, D_b2]
 
-# Assumed to be good
-def D(X, z):
-    h = tf.nn.relu(tf.matmul(tf.concat([X, z], 1), D_W1) + D_b1)
-    out = tf.matmul(h, D_W2) + D_b2
-    return out
+
+def D(z):
+    h = tf.nn.relu(tf.matmul(z, D_W1) + D_b1)
+    logits = tf.matmul(h, D_W2) + D_b2
+    prob = tf.nn.sigmoid(logits)
+    return prob
 
 
 """ Training """
 z_sample = Q(X, eps)
-p_prob, _ = P(z_sample, eps)
+_, logits = P(z_sample)
 
 # Sample from random z
-X_samples, _ = P(z, eps)
-
-# Adversarial loss to approx. Q(z|X)
-D_real = D(X, z)
-D_fake = D(X, z_sample)
+X_samples, _ = P(z)
 
 # E[log P(X|z)]
-#recon_loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=logits, labels=X))
-g_theta = -tf.reduce_mean(tf.log(p_prob))
-g_phi = -tf.reduce_mean(-D_real + tf.log(p_prob))
-g_psi = -tf.reduce_mean(tf.log(tf.nn.sigmoid(D_real)) + tf.log(1 - tf.nn.sigmoid(D_fake)))
+recon_loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits = logits, labels=X))
 
-opt = tf.train.AdamOptimizer(1e-3, beta1=0.5)
-p_grad = opt.compute_gradients(g_theta, var_list=theta_P+theta_Q)
-q_grad = opt.compute_gradients(g_phi, var_list=theta_Q)
-d_grad = opt.compute_gradients(g_psi, var_list=theta_D)
+# Adversarial loss to approx. Q(z|X)
+D_real = D(z)
+D_fake = D(z_sample)
 
-P_solver = opt.apply_gradients(p_grad)
-Q_solver = opt.apply_gradients(q_grad)
-D_solver = opt.apply_gradients(d_grad)
+g_psi = -tf.reduce_mean(tf.log(D_real) + tf.log(1. - D_fake))
+G_loss = -tf.reduce_mean(tf.log(D_fake))
+
+AE_solver = tf.train.AdamOptimizer().minimize(recon_loss, var_list=theta_P + theta_Q)
+D_solver = tf.train.AdamOptimizer().minimize(g_psi, var_list=theta_D)
+G_solver = tf.train.AdamOptimizer().minimize(G_loss, var_list=theta_Q)
 
 sess = tf.Session()
 sess.run(tf.initialize_all_variables())
@@ -128,25 +122,26 @@ if not os.path.exists('out/'):
     os.makedirs('out/')
 
 i = 0
+
 for it in range(1000000):
     X_mb, _ = mnist.train.next_batch(mb_size)
     eps_mb = np.random.randn(mb_size, eps_dim)
     z_mb = np.random.randn(mb_size, z_dim)
 
-    _, P_loss = sess.run([P_solver, g_theta],
-                         feed_dict={X: X_mb, eps: eps_mb, z: z_mb})
+    _, recon_loss_curr = sess.run([AE_solver, recon_loss],
+                                  feed_dict={X: X_mb, eps: eps_mb})
 
-    _, Q_loss = sess.run([Q_solver, g_phi],
-                         feed_dict={X: X_mb, eps: eps_mb, z: z_mb})
+    _, D_loss_curr = sess.run([D_solver, g_psi],
+                              feed_dict={X: X_mb, eps: eps_mb, z: z_mb})
 
-    _, D_loss = sess.run([D_solver, g_psi],
-                         feed_dict={X: X_mb, eps: eps_mb, z: z_mb})
+    _, G_loss_curr = sess.run([G_solver, G_loss],
+                              feed_dict={X: X_mb, eps: eps_mb})
 
-    if it % 1 == 0:
-        print('Iter: {}; P_loss: {:.4}; Q_loss: {:.4}; D_loss: {:.4}'
-              .format(it, P_loss, Q_loss, D_loss))
+    if it % 200 == 0:
+        print('Iter: {}; D_loss: {:.4}; G_loss: {:.4}; Recon_loss: {:.4}'
+              .format(it, D_loss_curr, G_loss_curr, recon_loss_curr))
 
-        samples = sess.run(X_samples, feed_dict={z: np.random.randn(mb_size, z_dim), eps:eps_mb})
+        samples = sess.run(X_samples, feed_dict={z: np.random.randn(16, z_dim)})
 
         fig = plot(samples)
         plt.savefig('out/{}.png'.format(str(i).zfill(3)), bbox_inches='tight')
