@@ -46,6 +46,7 @@ def xavier_init(size):
 X = tf.placeholder(tf.float32, shape=[None, X_dim], name='X')
 z = tf.placeholder(tf.float32, shape=[None, z_dim], name='z')
 eps = tf.placeholder(tf.float32, shape=[None, eps_dim], name='eps')
+eps_z = tf.placeholder(tf.float32, shape=[None, z_dim], name='eps')
 
 Q_W1 = tf.Variable(xavier_init([X_dim + eps_dim, h_dim]))
 Q_b1 = tf.Variable(tf.zeros(shape=[h_dim]))
@@ -71,15 +72,15 @@ P_b2 = tf.Variable(tf.zeros(shape=[X_dim]))
 
 theta_P = [P_W1, P_W2, P_b1, P_b2]
 
-def P(z, eps):
+def P(z):
     h = tf.nn.elu(tf.matmul(z, P_W1) + P_b1)
     logits = tf.matmul(h, P_W2) + P_b2
-    prob = tf.nn.tanh(logits)
+    prob = tf.nn.sigmoid(logits)
     return prob, logits
 
 
 """ D(z) """
-D_W1 = tf.Variable(xavier_init([z_dim + eps_dim, h_dim]))
+D_W1 = tf.Variable(xavier_init([X_dim+X_dim, h_dim]))
 D_b1 = tf.Variable(tf.zeros(shape=[h_dim]))
 
 D_W2 = tf.Variable(xavier_init([h_dim, 1]))
@@ -89,38 +90,32 @@ theta_D = [D_W1, D_W2, D_b1, D_b2]
 
 # Assumed to be good
 def D(X, z):
-    h = tf.nn.elu(tf.matmul(tf.concat([X, z], 1), D_W1) + D_b1)
+    h = tf.concat([X, z], 1)
+    h = tf.nn.elu(tf.matmul(h, D_W1) + D_b1)
     out = tf.matmul(h, D_W2) + D_b2
     return out
 
 
 """ Training """
-z_sample = Q(X, eps)
-p_prob, logits = P(z_sample, eps)
+q_z = Q(X, eps)
+p_x, _ = P(eps_z)
+p_x_t, _ = P(q_z)
 
-# Sample from random z
-X_samples, _ = P(z, eps)
+recon_likelihood_prior = tf.log(p_x)
+recon_likelihood = tf.log(p_x_t)
+
+log_d_prior = D(X, p_x)
+log_d_posterior = D(X, p_x_t)
 
 # Adversarial loss to approx. Q(z|X)
-D_real = D(X, z)
-D_fake = D(X, z_sample)
-
-# E[log P(X|z)]
-recon_loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=logits, labels=X))
-g_theta = -tf.reduce_mean(tf.log(D_fake))
-g_phi =  tf.reduce_mean(D_real) - tf.reduce_mean(tf.log(p_prob))
-#g_psi = -tf.reduce_mean(tf.log(tf.nn.sigmoid(D_real)) + tf.log(1 - tf.nn.sigmoid(D_fake)))
-g_psi = tf.reduce_mean(
-    tf.nn.sigmoid_cross_entropy_with_logits(logits=D_real, labels=tf.ones_like(D_real)) +
-    tf.nn.sigmoid_cross_entropy_with_logits(logits=D_fake, labels=tf.zeros_like(D_fake)))
-
-'''with tf.name_scope('gen_loss'):
-    gen_loss = tf.reduce_mean(D_real ) - tf.reduce_mean(recon_likelihood)
-    tf.summary.scalar('gen_loss', gen_loss)'''
+disc_loss = tf.reduce_mean(
+    tf.nn.sigmoid_cross_entropy_with_logits(labels = log_d_posterior, logits = tf.ones_like(log_d_posterior)) +
+    tf.nn.sigmoid_cross_entropy_with_logits(labels = log_d_prior, logits = tf.zeros_like(log_d_prior)))
+gen_loss = tf.reduce_mean(log_d_posterior) - tf.reduce_mean(recon_likelihood)
 
 opt = tf.train.AdamOptimizer(1e-3, beta1=0.5)
-q_grad = opt.compute_gradients(recon_loss, var_list=theta_Q+theta_P)
-d_grad = opt.compute_gradients(g_psi, var_list=theta_D)
+q_grad = opt.compute_gradients(gen_loss, var_list=theta_Q+theta_P)
+d_grad = opt.compute_gradients(disc_loss, var_list=theta_D)
 
 Q_solver = opt.apply_gradients(q_grad)
 D_solver = opt.apply_gradients(d_grad)
@@ -133,36 +128,32 @@ if not os.path.exists('out/'):
 if not os.path.exists('out2/'):
     os.makedirs('out2/')
 
-#points_per_class = 300
-#labels = np.concatenate([[i] * points_per_class for i in xrange(params['input_dim'])])
-#np_data = np.eye(params['input_dim'], dtype=np.float32)[labels]
-
-
 i = 0
 for it in range(1000000):
     X_mb, _ = mnist.train.next_batch(mb_size)
     eps_mb = np.random.randn(mb_size, eps_dim)
     z_mb = np.random.randn(mb_size, z_dim)
+    eps_z_mb = np.random.randn(mb_size, z_dim)
 
-    _, Q_loss = sess.run([Q_solver, recon_loss],
-                         feed_dict={X: X_mb, eps: eps_mb, z: z_mb})
+    _, Q_loss = sess.run([Q_solver, gen_loss],
+                         feed_dict={X: X_mb, eps: eps_mb, z: z_mb, eps_z:eps_z_mb})
 
-    _, D_loss = sess.run([D_solver, g_psi],
-                         feed_dict={X: X_mb, eps: eps_mb, z: z_mb})
+    _, D_loss = sess.run([D_solver, disc_loss],
+                         feed_dict={X: X_mb, eps: eps_mb, z: z_mb, eps_z:eps_z_mb})
 
-    if it % 500 == 0:
+    if it % 1 == 0:
         print('Iter: {}; Q_loss: {:.4}; D_loss: {:.4}'
               .format(it, Q_loss, D_loss))
         eps_mb = np.random.randn(4, eps_dim)
         X_mb, _ = mnist.train.next_batch(4)
 
-        samples = sess.run(X_samples, feed_dict={z: np.random.randn(16, z_dim)})
+        samples = sess.run(p_x_t, feed_dict={q_z: np.random.randn(16, z_dim)})
 
         fig = plot(samples)
         plt.savefig('out/{}.png'.format(str(i).zfill(3)), bbox_inches='tight')
         plt.close(fig)
 
-        reconstructed = sess.run(p_prob, feed_dict={X: X_mb, eps: eps_mb})
+        reconstructed = sess.run(p_x_t, feed_dict={X: X_mb, eps: eps_mb})
         n_examples = 4
         fig, axs = plt.subplots(2, n_examples, figsize=(10, 2))
         for example_i in range(n_examples):
