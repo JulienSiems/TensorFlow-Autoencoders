@@ -7,7 +7,7 @@ from tensorflow.examples.tutorials.mnist import input_data
 
 
 mnist = input_data.read_data_sets('../../MNIST_data', one_hot=True)
-mb_size = 32
+mb_size = 100
 z_dim = 10
 eps_dim = 4
 X_dim = mnist.train.images.shape[1]
@@ -96,7 +96,7 @@ def D(z):
 
 """ Training """
 z_sample = Q(X, eps)
-_, logits = P(z_sample)
+prob, logits = P(z_sample)
 
 # Sample from random z
 X_samples, _ = P(z)

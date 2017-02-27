@@ -1,3 +1,5 @@
+import matplotlib
+matplotlib.use('Agg')
 import tensorflow as tf
 import numpy as np
 import tensorflow.examples.tutorials.mnist.input_data as input_data
@@ -99,7 +101,7 @@ class VariationalAutoencoder:
 
             eps = tf.random_normal(shape=(1, self.enc_dimensions[-1]), name = 'gaussian_noise')
 
-            self.latent = tf.add(self.mu, tf.mul(tf.sqrt(tf.exp(self.logvar)), eps), name ='hidden_layer')
+            self.latent = tf.add(self.mu, tf.multiply(tf.sqrt(tf.exp(self.logvar)), eps), name ='hidden_layer')
             current_input = self.latent
 
         # DECODER
@@ -128,7 +130,7 @@ class VariationalAutoencoder:
         loss = tf.reduce_mean(self.latent_loss + self.reconstruction_error)
         tf.summary.scalar('loss', loss)
         return loss'''
-        self.reconstr_error = tf.reduce_sum(tf.pow(tf.sub(self.prediction, self.image), 2))
+        self.reconstr_error = tf.reduce_sum(tf.pow(tf.subtract(self.prediction, self.image), 2))
         self.latent_loss = -1/2*tf.reduce_sum(1 + self.logvar - tf.square(self.mu) - tf.exp(self.logvar), name = 'latent_loss')
         self.loss = self.reconstr_error + self.latent_loss
         tf.summary.scalar('error', self.loss)
@@ -142,12 +144,12 @@ def main():
 
     merged_summary = tf.summary.merge_all()
     sess = tf.Session()
-    logpath = '/tmp/tensorflow_logs/vae/6'
+    logpath = '/tmp/tensorflow_logs/vae/1'
     test_writer = tf.summary.FileWriter(logpath, graph=tf.get_default_graph())
     #train_writer = tf.summary.FileWriter('/train')
     sess.run(tf.global_variables_initializer())
 
-    for epoch_i in range(80):
+    for epoch_i in range(200):
         test_images = mnist.test.images
         test = np.array([img - mean_img for img in test_images])
         error, summary = sess.run(fetches=[model.error, merged_summary], feed_dict={image: test_images})
@@ -172,9 +174,10 @@ def main():
             np.reshape(test_xs[example_i, :], (28, 28)))
         axs[1][example_i].imshow(
             np.reshape([recon[example_i, :]], (28, 28)))
-    fig.show()
     plt.draw()
-    plt.waitforbuttonpress()
+    plt.savefig('15_examples_1.png')
+    plt.close(fig)
+    #plt.waitforbuttonpress()
 
     n_examples = 15
     test_xs = np.random.normal(size=(n_examples, 64))
@@ -185,10 +188,10 @@ def main():
             np.reshape(test_xs[example_i, :], (8, 8)))
         axs[1][example_i].imshow(
             np.reshape([recon[example_i, :]], (28, 28)))
-    fig.show()
     plt.draw()
     plt.savefig('15_examples.png')
-    plt.waitforbuttonpress()
+    plt.close(fig)
+    #plt.waitforbuttonpress()
 
 
 if __name__ == '__main__':
