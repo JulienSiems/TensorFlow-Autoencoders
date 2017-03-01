@@ -1,3 +1,5 @@
+import matplotlib
+matplotlib.use('Agg')
 import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
@@ -6,9 +8,9 @@ import os
 from tensorflow.examples.tutorials.mnist import input_data
 
 
-mnist = input_data.read_data_sets('../../MNIST_data', one_hot=True)
-mb_size = 100
-z_dim = 10
+mnist = input_data.read_data_sets('./MNIST_data', one_hot=True)
+mb_size = 32
+z_dim = 64
 eps_dim = 4
 X_dim = mnist.train.images.shape[1]
 y_dim = mnist.train.labels.shape[1]
@@ -41,7 +43,7 @@ def xavier_init(size):
 
 """ Q(z|X,eps) """
 X = tf.placeholder(tf.float32, shape=[None, X_dim])
-z = tf.placeholder(tf.float32, shape=[None, z_dim])
+X_eps = tf.placeholder(tf.float32, shape=[None, X_dim], name='X_eps')
 eps = tf.placeholder(tf.float32, shape=[None, eps_dim])
 
 Q_W1 = tf.Variable(xavier_init([X_dim + eps_dim, h_dim]))
@@ -96,24 +98,31 @@ def D(z):
 
 """ Training """
 z_sample = Q(X, eps)
-prob, logits = P(z_sample)
+z_sample_fake = Q(X_eps, eps)
+recon, logits = P(z_sample)
 
 # Sample from random z
-X_samples, _ = P(z)
+X_samples, _ = P(z_sample_fake)
 
 # E[log P(X|z)]
-recon_loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits = logits, labels=X))
+recon_loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=recon, labels=X))
 
 # Adversarial loss to approx. Q(z|X)
-D_real = D(z)
-D_fake = D(z_sample)
+D_real = D(z_sample)
+D_fake = D(z_sample_fake)
 
-g_psi = -tf.reduce_mean(tf.log(D_real) + tf.log(1. - D_fake))
-G_loss = -tf.reduce_mean(tf.log(D_fake))
+D_loss = -tf.reduce_mean(tf.log(D_real) + tf.log(1 - D_fake))
+G_loss = -tf.reduce_mean(tf.log(recon))
 
-AE_solver = tf.train.AdamOptimizer().minimize(recon_loss, var_list=theta_P + theta_Q)
-D_solver = tf.train.AdamOptimizer().minimize(g_psi, var_list=theta_D)
-G_solver = tf.train.AdamOptimizer().minimize(G_loss, var_list=theta_Q)
+adam = tf.train.AdamOptimizer(learning_rate=1e-4)
+
+AE_g = adam.compute_gradients(recon_loss, var_list=theta_Q)
+D_g = adam.compute_gradients(D_loss, var_list=theta_D)
+G_g = adam.compute_gradients(G_loss, var_list=theta_P)
+
+AE_solver = adam.apply_gradients(AE_g)
+G_solver = adam.apply_gradients(G_g)
+D_solver = adam.apply_gradients(D_g)
 
 sess = tf.Session()
 sess.run(tf.initialize_all_variables())
@@ -126,24 +135,43 @@ i = 0
 for it in range(1000000):
     X_mb, _ = mnist.train.next_batch(mb_size)
     eps_mb = np.random.randn(mb_size, eps_dim)
-    z_mb = np.random.randn(mb_size, z_dim)
+    z_mb = np.random.randn(mb_size, X_dim)
 
     _, recon_loss_curr = sess.run([AE_solver, recon_loss],
                                   feed_dict={X: X_mb, eps: eps_mb})
 
-    _, D_loss_curr = sess.run([D_solver, g_psi],
-                              feed_dict={X: X_mb, eps: eps_mb, z: z_mb})
-
     _, G_loss_curr = sess.run([G_solver, G_loss],
-                              feed_dict={X: X_mb, eps: eps_mb})
+                              feed_dict={X: X_mb, eps: eps_mb, X_eps: z_mb})
 
+    _, D_loss_curr = sess.run([D_solver, D_loss],
+                              feed_dict={X: X_mb, eps: eps_mb, X_eps: z_mb})
     if it % 200 == 0:
         print('Iter: {}; D_loss: {:.4}; G_loss: {:.4}; Recon_loss: {:.4}'
               .format(it, D_loss_curr, G_loss_curr, recon_loss_curr))
 
-        samples = sess.run(X_samples, feed_dict={z: np.random.randn(16, z_dim)})
+        eps_mb = np.random.randn(16, eps_dim)
+        X_mb, _ = mnist.train.next_batch(4)
+
+        samples = sess.run(X_samples, feed_dict={X_eps: np.random.randn(16, X_dim), eps: eps_mb})
 
         fig = plot(samples)
         plt.savefig('out/{}.png'.format(str(i).zfill(3)), bbox_inches='tight')
         i += 1
         plt.close(fig)
+
+        eps_mb = np.random.randn(4, eps_dim)
+        X_mb, _ = mnist.train.next_batch(4)
+
+        reconstructed, latent_rep = sess.run([recon, z_sample], feed_dict={X: X_mb, eps: eps_mb})
+        n_examples = 4
+        fig, axs = plt.subplots(3, n_examples, figsize=(4, 3))
+        for example_i in range(n_examples):
+            axs[0][example_i].imshow(
+                np.reshape(X_mb[example_i, :], (28, 28)))
+            axs[1][example_i].imshow(
+                np.reshape(latent_rep[example_i, :], (8, 8)))
+            axs[2][example_i].imshow(
+                np.reshape([reconstructed[example_i, :]], (28, 28)))
+        plt.savefig('out2/{}.png'.format(str(i).zfill(3)), bbox_inches='tight')
+        plt.close(fig)
+        i += 1
