@@ -15,10 +15,10 @@ from tensorflow.examples.tutorials.mnist import input_data
 # In[2]:
 
 params = {
-    'batch_size': 100,
-    'latent_dim': 500, # dimensionality of latent space
-    'eps_dim': 784, # dimensionality of epsilon, used in inference net, z_phi(x, eps)
-    'input_dim': 784, # dimensionality of input (also the number of unique datapoints)
+    'batch_size': 512,
+    'latent_dim': 2, # dimensionality of latent space
+    'eps_dim': 4, # dimensionality of epsilon, used in inference net, z_phi(x, eps)
+    'input_dim': 4, # dimensionality of input (also the number of unique datapoints)
     'n_layer_disc': 2, # number of hidden layers in discriminator
     'n_hidden_disc': 256, # number of hidden units in discriminator
     'n_layer_gen': 2,
@@ -26,6 +26,9 @@ params = {
     'n_layer_inf': 2,
     'n_hidden_inf': 256,
 }
+points_per_class = params['batch_size'] / params['input_dim']
+labels = np.concatenate([[i] * points_per_class for i in xrange(params['input_dim'])])
+np_data = np.eye(params['input_dim'], dtype=np.float32)[labels]
 
 def plot(samples):
     fig = plt.figure(figsize=(4, 4))
@@ -46,7 +49,6 @@ def standard_normal(shape, **kwargs):
     return st.StochasticTensor(
         ds.MultivariateNormalDiag(mu=tf.zeros(shape), diag_stdev=tf.ones(shape), **kwargs))
 
-# p(x|z(x, eps))
 def generative_network(batch_size, latent_dim, input_dim, n_layer, n_hidden, eps=1e-6):
     with tf.variable_scope("generative"):
         z = standard_normal([batch_size, latent_dim], name="p_z")
@@ -57,7 +59,6 @@ def generative_network(batch_size, latent_dim, input_dim, n_layer, n_hidden, eps
         x = st.StochasticTensor(ds.Bernoulli(p=p, name="p_x"))
     return [x, z]
 
-# q(z|x)
 def inference_network(x, latent_dim, n_layer, n_hidden, eps_dim):
     eps = standard_normal([x.get_shape().as_list()[0], eps_dim], name="eps").value()
     h = tf.concat([x, eps], 1)
@@ -66,7 +67,6 @@ def inference_network(x, latent_dim, n_layer, n_hidden, eps_dim):
         z = slim.fully_connected(h, latent_dim, activation_fn=None, scope="q_z")
     return z
 
-# T 
 def data_network(x, z, n_layers=2, n_hidden=256, activation_fn=None):
     """Approximate log data density."""
     h = tf.concat([x, z], 1)
@@ -75,37 +75,31 @@ def data_network(x, z, n_layers=2, n_hidden=256, activation_fn=None):
         log_d = slim.fully_connected(h, 1, activation_fn=activation_fn)
     return tf.squeeze(log_d, squeeze_dims=[1])
 
-
 tf.reset_default_graph()
 
-x = tf.placeholder(dtype=tf.float32, shape=[params['batch_size'], params['input_dim']])
+x = tf.constant(np_data)
 p_x, p_z = generative_network(params['batch_size'], params['latent_dim'], params['input_dim'],
                               params['n_layer_gen'], params['n_hidden_gen'])
 q_z = inference_network(x, params['latent_dim'], params['n_layer_inf'], params['n_hidden_inf'],
                        params['eps_dim'])
 
 # Discriminator classifies between (x, z_prior) and (x, z_posterior)
-# where z_prior ~ p(z), and z_posterior = q(z, eps) with eps ~ N(0, I)
+# where z_prior ~ p(z), and zq_z_posterior = q(z, eps) with eps ~ N(0, I)
 log_d_prior = data_network(x, p_z.value(), n_layers=params['n_layer_disc'],
                            n_hidden=params['n_hidden_disc'])
 log_d_posterior = graph_replace(log_d_prior, {p_z.value(): q_z})
-with tf.name_scope('disc_loss'):
-    disc_loss = tf.reduce_mean(
-        tf.nn.sigmoid_cross_entropy_with_logits(logits=log_d_posterior, labels=tf.ones_like(log_d_posterior)) +
-        tf.nn.sigmoid_cross_entropy_with_logits(logits=log_d_prior, labels=tf.zeros_like(log_d_prior)))
-    tf.summary.scalar('disc_loss', disc_loss)
+disc_loss = tf.reduce_mean(
+    tf.nn.sigmoid_cross_entropy_with_logits(labels=log_d_posterior, logits=tf.ones_like(log_d_posterior)) +
+    tf.nn.sigmoid_cross_entropy_with_logits(labels=log_d_prior, logits=tf.zeros_like(log_d_prior)))
 
 # Compute log p(x|z) with z ~ p(z), used as a placeholder
 recon_likelihood_prior = p_x.distribution.log_prob(x)
 # Compute log p(x|z) with z = q(x, eps)
 # This is the same as the above expression, but with z replaced by a sample from q instead of p
-recon = graph_replace(recon_likelihood_prior, {p_z.value(): q_z})
-recon_likelihood = tf.reduce_sum(recon, [1])
+recon_likelihood = tf.reduce_sum(graph_replace(recon_likelihood_prior, {p_z.value(): q_z}), [1])
 
 # Generator tries to maximize reconstruction log-likelihood while minimizing the discriminator output
-with tf.name_scope('gen_loss'):
-    gen_loss = tf.reduce_mean(log_d_posterior) - tf.reduce_mean(recon_likelihood)
-    tf.summary.scalar('gen_loss', gen_loss)
+gen_loss = tf.reduce_mean(log_d_posterior) - tf.reduce_mean(recon_likelihood)
 
 qvars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "inference")
 pvars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "generative")
@@ -113,25 +107,19 @@ dvars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "discriminator")
 opt = tf.train.AdamOptimizer(1e-3, beta1=0.5)#, epsilon=1e-3)
 train_gen_op =  opt.minimize(gen_loss, var_list=qvars + pvars)
 train_disc_op = opt.minimize(disc_loss, var_list=dvars)
-
-mnist = input_data.read_data_sets('../../MNIST_data', one_hot=True)
-
-merged_summary = tf.summary.merge_all()
-sess = tf.Session()
+sess = tf.InteractiveSession()
 sess.run(tf.global_variables_initializer())
-logpath = '/tmp/tensorflow_logs/avb/7'
-test_writer = tf.summary.FileWriter(logpath, graph=tf.get_default_graph())
 
-i = 0
-
-for it in range(10000):
-    test_xs, _ = mnist.train.next_batch(params['batch_size'])
-    f, _, _ , summary = sess.run([[gen_loss, disc_loss], train_gen_op, train_disc_op, merged_summary],
-                                 feed_dict={x: test_xs})
-    test_writer.add_summary(summary, it)
-    if it % 100 == 0:
+it = 0
+fs = []
+for i in range(10000):
+    f, _, _ = sess.run([[gen_loss, disc_loss, log_d_posterior], train_gen_op, train_disc_op])
+    print(f)
+    fs.append(f)
+    if it % 1000 == 0:
         print(f)
-        reconstructed = sess.run(recon, feed_dict={x: test_xs})
+        it +=1
+        '''reconstructed = sess.run(recon, feed_dict={x: test_xs})
 
         fig = plot(reconstructed[1:5])
         plt.savefig('out/{}.png'.format(str(i).zfill(3)), bbox_inches='tight')
@@ -146,4 +134,4 @@ for it in range(10000):
             axs[1][example_i].imshow(
                 np.reshape([reconstructed[example_i, :]], (28, 28)))
         plt.savefig('out2/{}.png'.format(str(i).zfill(3)), bbox_inches='tight')
-        plt.close(fig)
+        plt.close(fig) '''
