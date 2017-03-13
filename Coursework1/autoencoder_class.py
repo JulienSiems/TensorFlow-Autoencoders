@@ -4,7 +4,10 @@ import tensorflow.examples.tutorials.mnist.input_data as input_data
 import matplotlib.pyplot as plt
 import functools
 
-# TO DO: ADD THE REFERENCES
+# References
+# https://danijar.com/structuring-your-tensorflow-models/
+# https://jmetzen.github.io/2015-11-27/vae.html
+
 def xavier_init(fan_in, fan_out, constant = 1):
     with tf.name_scope('xavier'):
         low = -constant * np.sqrt(6.0 / (fan_in + fan_out))
