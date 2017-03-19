@@ -4,7 +4,7 @@ Reference implementations for variational autoencoder, autoencoder, generative a
 
 I managed to get them working for the autoencoder and variational autoencoder using the beautiful class structure described by Danijar [here.](https://danijar.com/structuring-your-tensorflow-models/)
 
-Reconstructions from the variational autoencoder:
+Input and reconstructions from the variational autoencoder:
 <p align="center">
 <img src="https://github.com/JulienSiems/TensorFlow-models/blob/master/Variational%20Autoencoder/000.png" width="80%"/>
 </p>
