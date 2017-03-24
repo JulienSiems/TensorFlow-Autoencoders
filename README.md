@@ -13,3 +13,6 @@ Samples drawn from the latent space of the variational autoencoder and the corre
 <p align="center">
 <img src="https://github.com/JulienSiems/TensorFlow-models/blob/master/Variational%20Autoencoder/15_examples.png" width="98%"/>
 </p>
+
+To be done:
+- Adversarial Autoencoder
